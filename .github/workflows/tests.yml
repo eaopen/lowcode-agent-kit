@@ -1,0 +1,22 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unittest:
+    name: Python 3.12 / MCP stdio tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - name: Install
+        run: uv sync --frozen --python 3.12
+      - name: Unit and MCP tests
+        run: uv run python -m unittest discover -s tests -v

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+.env
+.env.*
+*.token
+*.pem
+*.key
+.mcp.json
