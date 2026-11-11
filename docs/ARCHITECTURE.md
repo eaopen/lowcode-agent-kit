@@ -1,50 +1,65 @@
-# 平台边界与工具契约
+# EXTN-first Low-Code Agent Kit — 架构与能力边界
 
-## 产品体系
+## 主平台：EXTN 7.5（规划）
 
-**EAP + OpenBPM** 是通用框架与流程/表单体系，OpenBPM 的 BPM 内核以 bpm-core 为基础。Boot3 与 Boot4 属于不同技术线；实际宿主版本、接口和功能开关必须独立检查。
+EXTN 已有 VisualDev（表单、列表、字段、数据模型）、Flowable、权限、字典、数据接口与报表设计。7.5 的价值是让 AI Coding Agent 使用同一模型并遵循 EXTN 原有业务规则，**不是在外部项目新建一套低代码引擎**。
 
-**EXTN** 是独立业务平台，具有 VisualDev、Flowable、数据字典与权限，不能与 OpenBPM 表单/流程配置直接互转。
+EXTN 的 AI-v3 模块已包含内部 Skills/MCP 管理和独立示例服务，但当前独立服务主要暴露天气 demo；这与面向企业配置开发的 Skills/MCP 工具是不同职责。Kit 不复制 EXTN 内置 AI 管理，只负责外部开发工具层。
 
-**CloudFile** 是文件、授权、库与搜索能力提供者，不是低代码表单/流程引擎。文件读写、导入、诊断复用 [cloudfile-toolkit](https://github.com/eaopen/cloudfile-toolkit)，不在本项目重复。
+## 兼容边界
 
-**JeecgBoot** 暂时仅参考 Skills 的任务路由、模板生成、API 操作及测试组织方法，不列入 v0 适配器。
+- **EAP + OpenBPM**：保留现有业务对象/表单/Activiti 流程读取；Boot3 与 Boot4 的能力由宿主环境决定，不能把其内部模型当作 EXTN 7.5 标准。
+- **CloudFile**：文件、授权和元数据的企业连接器，不是第三套表单/流程引擎；专业搜索/文件操作复用 [cloudfile-toolkit](https://github.com/eaopen/cloudfile-toolkit)。
+- **JeecgBoot**：参考 Skills、模板、业务任务拆分方式，不作为当前兼容目标。
 
-## 分层
+## 三层结构
 
 ```text
-Codex / Claude Code / Paseo / WorkBuddy
-             ↓
-       Skills 使用场景
-             ↓
-    统一 MCP / 工具契约
-    Discover | Inspect | Preview
-           ↙ ↓ ↘
-    eap-obpm extn cloudfile
-         ↘  ↓  ↙
-       原有受控 REST API
-             ↓
-   用户身份 / 权限 / 版本 / ACL
+Codex / Claude Code / Paseo / other Coding Agents
+                     |
+              EXTN-first Skills
+                     |
+            MCP / Tool Contract
+          discover | inspect | plan
+                     |
+           EXTN Application Context
+          (bounded, redacted projection)
+                     |
+        EXTN original VisualDev / Flowable
+       forms | data | dictionaries | workflow
+                     |
+          original user/tenant/ACL policy
+
+兼容旁路： EAP + OpenBPM Adapter
+文件连接： CloudFile Connector → CloudFile Toolkit
 ```
 
-标准能力名表示**操作语义**。每个平台独立定义 URL、方法、业务 ID、响应结构与版本前置条件，绝不伪造一个可跨平台存取的统一表单 JSON。
+**Context 是原生 VisualDev 配置的只读视图**：从返回的表单 `formData` 提取 `fields`、`__config__`、`__vModel__` 和表、字典、接口、流程关联；删除事件脚本和富文本等不必要负载。不得写回、同步到另一套数据库或把模型上下文当成权限。
 
-v0 只提供只读能力。只有 OpenBPM `getAllUserTaskNode` 的 POST 是**仅查询**的专用例外。所有写入动作、BPMN 发布、用户审批和权限变更均未暴露。
+## 已登记的 EXTN 只读能力
 
-## 适配清单
-
-| 适配器 | 已登记的只读能力 | 数据来源 |
+| 能力 | 原生 API 路由 | 备注 |
 | --- | --- | --- |
-| eap-obpm | model.inspect | `/bus/businessObject/getBoStruct` |
-| eap-obpm | form.inspect | `/form/formDef/getObject` |
-| eap-obpm | workflow.inspect, workflow.nodes | `/bpm/definition/*` |
-| extn | model.inspect, form.inspect | `/api/visualdev/Base/*` |
-| extn | workflow.inspect | `/api/workflow/template/*` |
-| extn | dictionary.inspect | `/api/system/DictionaryData/*` |
-| cloudfile | files.features, files.libraries, files.library.inspect | Seahub 原生及 CloudFile V2 API |
+| `form.catalog` | GET `/api/visualdev/Base/list` | 固定第一页最多 20 条 |
+| `form.inspect` / `form.context` | GET `/api/visualdev/Base/{id}` | 后者只返回摘要，不暴露脚本正文 |
+| `model.inspect` | GET `/api/visualdev/Base/{id}/FormDataFields` | 字段定义，非业务数据行 |
+| `workflow.catalog` | GET `/api/workflow/template` | 固定第一页最多 20 条 |
+| `workflow.inspect` | GET `/api/workflow/template/{id}` | 模板基础信息 |
+| `workflow.definition.inspect` | GET `/api/workflow/template/Info/{id}` | 传递的是版本定义 ID |
+| `workflow.versions.inspect` | GET `/api/workflow/template/Version/{id}` | 模板 ID |
+| `workflow.form.inspect` | GET `/api/workflow/template/{id}/FormInfo` | 流程版本 ID |
+| `dictionary.inspect` | GET `/api/system/DictionaryData/{id}/Data/Selector` | 字典类型 ID |
 
-## 下一阶段能力
+所有接口由 EXTN 现有身份/权限终判。`platform_discover` 是源码声明而非在线版本探测；远端可能因版本、角色、租户与特性开关拒绝请求。
 
-先完成真实 DEV 授权联验和部署级能力发现，再考虑 Schema v2、动态数据集、权限解释和变更计划的领域校验。受控写入应单独批准和设计幂等、版本冲突、变更前后验收证据。开发 Agent 与业务用户 Agent 分开授权。
+## EXTN 离线差异计划（当前已实现）
 
-MCP Server 不代理任意 HTTP，不解析来自网页、文件、提示词的工具执行指令，不直接调用底层数据库。
+`extn_preview_definition_change` 使用表名 + `__vModel__` 作为字段身份，比较前后两版定义。布局顺序变化不触发字段迁移警报；字段移除、字典切换或数据接口变化会标记高风险，增加字段或变更必填标记中风险。风险只是待人工复核提示，工具不执行写入、升级或 DDL。
+
+## 如何修改存量应用（下一阶段）
+
+先读取同一份 VisualDev/流程模型及其依赖图，生成 `before/after` 差异与兼容性检查，再按平台原生的发布/版本/审计链路执行。未经批准不能自动保存、部署、回滚、修改权限或审批真实业务。
+
+当前 MCP 仅允许精确白名单 GET 以及 OpenBPM 用于查询节点的固定 POST；禁止“万能 HTTP/SQL”、不接受 AI 指定完整 URL、不能通过 UI 绕过权限。开发 Agent 与企业用户端 Agent 分离。
+
+更多见 [EXTN 7.5 规划](EXTN-7.5.md)、[阶段路线](ROADMAP.md)。

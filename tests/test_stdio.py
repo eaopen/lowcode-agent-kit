@@ -35,5 +35,53 @@ class StdioMCPTests(unittest.IsolatedAsyncioTestCase):
                 self.assertIn("offline-preview-only", str(response.structured_content or response.content))
 
 
+    async def test_extn_offline_context_tool_through_stdio(self):
+        env = dict(os.environ)
+        env.pop("LOWCODE_API_BASE_URL", None)
+        env.pop("LOWCODE_TOKEN", None)
+        env["LOWCODE_PLATFORM"] = "extn"
+        process = StdioServerParameters(
+            command=sys.executable,
+            args=["-m", "lowcode_agent_kit.mcp_server"],
+            env=env,
+        )
+        payload = {
+            "formData": '{"fields":[{"__vModel__":"name","__config__":{"compKey":"input","label":"姓名"}}]}',
+        }
+        import json
+
+        async with stdio_client(process) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                tools = await session.list_tools()
+                names = {tool.name for tool in tools.tools}
+                self.assertIn("extn_analyze_definition", names)
+                result = await session.call_tool(
+                    "extn_analyze_definition",
+                    {"form_definition_json": json.dumps(payload)},
+                )
+                self.assertFalse(result.is_error)
+                body = result.structured_content or result.content
+                self.assertIn("extn-visualdev-context/v1", str(body))
+                self.assertIn("componentCount", str(body))
+                self.assertIn("extn_preview_definition_change", names)
+                planned = await session.call_tool(
+                    "extn_preview_definition_change",
+                    {
+                        "before_definition_json": json.dumps(payload),
+                        "after_definition_json": json.dumps(payload),
+                    },
+                )
+                self.assertFalse(planned.is_error)
+                self.assertIn("extn-form-change-preview/v1", str(planned.structured_content or planned.content))
+                # A tool cannot connect to the platform merely because the
+                # offline analyzer was used without credentials.
+                denied = await session.call_tool(
+                    "platform_inspect",
+                    {"capability": "form.context", "identifier": "abc"},
+                )
+                self.assertTrue(denied.is_error)
+
+
 if __name__ == "__main__":
     unittest.main()

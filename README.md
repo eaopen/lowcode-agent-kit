@@ -1,80 +1,89 @@
-# Low-Code Agent Kit — AI 低代码开发工具
+# Low-Code Agent Kit — EXTN-first AI 低代码开发工具
 
-**EAP + OpenBPM · EXTN · CloudFile** — 一套面向 AI Coding 的 Skills/MCP 工具契约，多套平台适配器。
+**优先服务 EXTN 7.5 — AI-Ready Enterprise Application Foundation**，以真实企业应用的理解、修改、验证和持续交付为目标。EXTN 7.5 目前是**规划中的版本**，不是已发布制品。
 
-[架构](docs/ARCHITECTURE.md) · [安全边界](docs/SECURITY.md) · [演进计划](docs/ROADMAP.md)
+[EXTN 7.5 规划](docs/EXTN-7.5.md) · [架构](docs/ARCHITECTURE.md) · [产品对标](docs/BENCHMARKS-2026.md) · [路线图](docs/ROADMAP.md) · [安全](docs/SECURITY.md)
 
-## 当前交付范围：v0.1.0
+## 产品方向与适配边界
 
-首版是**可运行的只读 MCP stdio 原型**，不是生产级配置修改器。
+| 体系 | 定位 | 首批能力 |
+| --- | --- | --- |
+| **EXTN** | **主平台、优先开发和验收** | 表单目录、字段/控件上下文、字典依赖、Flowable 模板及版本、离线变更分析 |
+| EAP + OpenBPM | 兼容适配（非开发主线） | 保留现有业务对象、表单、流程及节点的只读查询 |
+| CloudFile | 企业文件/ACL 连接器（按需） | 功能开关、授权可访问的文件库元数据；深度文件操作复用 [cloudfile-toolkit](https://github.com/eaopen/cloudfile-toolkit) |
+| JeecgBoot | 行业及开源 Skills 参考 | 暂不实现适配器 |
 
-| 体系 | 代码适配器 | 首批工具 | 实际联网联验 |
-| --- | --- | --- | --- |
-| EAP + OpenBPM | `eap-obpm` | 业务对象、表单、流程定义、节点读取 | 待验收 |
-| EXTN | `extn` | 模型字段、表单、流程模板、数据字典 | 待验收 |
-| CloudFile | `cloudfile` | 功能开关、授权内的库列表/详情 | 待验收 |
-| JeecgBoot | 参考 | 学习 Skills 设计及业务任务编排 | 不支持 |
+**目前是 v0.2 技术预览，只有只读 MCP stdio 工具和离线分析能力。** 业务系统版本、实际授权、配置写入/部署功能仍需 EXTN 独立交付。代码和单测通过不代表已完成真实业务环境联调。
 
-已有的 [CloudFile Toolkit](https://github.com/eaopen/cloudfile-toolkit) 负责文件、导入、诊断等深度技能，不在此重新造一套文件客户端或 CLI。
+## 核心价值
+
+AI Coding Agent 不需要先重造一套应用模型，也不需要为每个控件补 AI 专属字段：
+
+1. **发现**现有 EXTN 表单、流程、字段与字典。
+2. **理解**原有 VisualDev 定义：控件模型、必填、字典、主子表、数据集和流程依赖。
+3. **提出改动**：根据用户需求生成待审核的配置和差异计划。
+4. **验证/发布**：未来由 EXTN 原生权限、Schema、流程版本与发布机制执行；本版不会自动写入。
+
+EXTN 的开发设计端保持中文友好的交付体验；最终用户端以本地化为先，允许安全回退部分原文，不强制开发者逐项配置翻译键。
 
 ## 快速开始
 
-依赖 Python 3.11+ 与 [uv](https://docs.astral.sh/uv/)。
+要求 Python 3.11+、[uv](https://docs.astral.sh/uv/)。
 
 ```bash
 git clone https://github.com/eaopen/lowcode-agent-kit.git
 cd lowcode-agent-kit
 uv sync
 
-# 只读发现和离线规划不需要配置账号
-LOWCODE_PLATFORM=eap-obpm uv run lowcode-mcp
+# 首选平台：EXTN；没有令牌时仍可查看本地声明并使用离线分析
+LOWCODE_PLATFORM=extn uv run lowcode-mcp
 ```
 
-联网查元数据时，**仅通过运行进程环境**传入目标实例和当前用户凭证：
+连接授权的 DEV/测试环境时，使用进程环境（不要在命令历史中填真实 Token，建议由安全凭据管理器注入）：
 
 ```bash
-export LOWCODE_PLATFORM=eap-obpm   # 或 extn / cloudfile
-export LOWCODE_API_BASE_URL=https://example.internal/obpm-api
-export LOWCODE_TOKEN='<from-local-credential-manager>'
+export LOWCODE_PLATFORM=extn
+export LOWCODE_API_BASE_URL=https://your-authorized-dev-instance.example
+export LOWCODE_TOKEN='<injected-by-credential-manager>'
 uv run lowcode-mcp
 ```
 
-CloudFile 默认采用 `Authorization: Token ...`，其他两套默认采用 `Bearer`；如系统实际认证不同，可用 `LOWCODE_AUTH_HEADER` / `LOWCODE_AUTH_SCHEME` 配置。远程 HTTP 明文连接默认禁止，受控内网实验环境需明确开启 `LOWCODE_ALLOW_INSECURE_HTTP=true`。
+默认认证为 Bearer；可按实际部署调整 `LOWCODE_AUTH_SCHEME` 与 `LOWCODE_AUTH_HEADER`。CloudFile 默认是原生 `Authorization: Token ...`。远端非 HTTPS 默认禁用，受控内网测试才按安全文档明确配置例外。
 
-在 Codex、Claude Code、Paseo 或其他支持 MCP 的工具中注册上述 stdio 命令。多个平台使用**多个独立 MCP 连接**，分别配置凭据与目标环境，避免跨租户/项目混用身份。
+对于不同环境与平台，分别使用独立的 MCP stdio 进程和凭据，不混用认证身份。
 
 ### MCP 工具
 
-- `platform_discover()`：读取本地适配器声明的能力，不访问服务器。
-- `platform_inspect(capability, identifier)`：通过白名单中列出的既有 REST API 读取资源。
-- `preview_change(before_json, after_json)`：本地比较两份 JSON，生成摘要与哈希，**不应用**。
+| 工具 | EXTN 模式 | 是否连接平台 |
+| --- | --- | --- |
+| `platform_discover` | 仅声明当前适配器具备的工具及只读边界 | 否 |
+| `platform_inspect` | `form.catalog`、`form.inspect`、`form.context`、`model.inspect`、`workflow.catalog`、`workflow.inspect`、`workflow.definition.inspect`、`workflow.versions.inspect`、`workflow.form.inspect`、`dictionary.inspect` | 是（无凭据拒绝） |
+| `extn_analyze_definition` | 解析 JSON 字符串的表单控件及依赖摘要，不返回 JS/富文本/业务行 | 否 |
+| `extn_preview_definition_change` | 比较两版表单的字段增删、必填变化、控件与字典依赖，提示影响风险，不写入 | 否 |
+| `preview_change` | 顶层字段离线差异、SHA-256；不修改平台 | 否 |
 
-示例：先 discover，再 inspect 一个有授权的表单，然后预览拟议修改。当前没有任何配置写入、业务审批、任意 REST、SQL 或文件下载工具。
+`form.catalog` 和 `workflow.catalog` 仅访问固定第一页最多 20 条；`form.context` 通过受限原生 API 读取后返回摘要而不是原始表单脚本，面向 Coding Agent 的上下文发现更节省信息量。
 
-**注意：离线发现不能证明目标部署版本支持该接口。** 具体 URL、权限、数据模型须在目标实例验证。本仓库当前的测试不包含真实业务登录及审批。
+**当前并没有配置写入、工作流审批、任意 SQL、任意 REST 或代码执行工具**。业务服务器的权限检查始终有效；源码有路由不代表实际部署开放了该能力。
 
-## 通用 Skills 安装
+## Skills 安装
 
-通用安装器可以把本仓库的 Skills 按需链接/复制到**用户指定的 Agent Skills 目录**，不内置任何项目专属逻辑，也不会覆盖已有同名技能。
+使用通用安装器将 Skills 安装到**用户指定**的 Codex、Claude Code 或其他 Agent 所扫描目录，不覆盖已有同名 Skills：
 
 ```bash
-# 请将 --target 换成当前 AI Agent 实际扫描的 Skills 目录
-uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills --dry-run
-uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills
+# 默认只安装 EXTN 的 Skill
+uv run lowcode-install-skills --target /path/to/agent/skills --dry-run
+uv run lowcode-install-skills --target /path/to/agent/skills
 
-# Windows 没有创建符号链接权限时，使用复制（更新时需显式管理旧副本）
-uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills --method copy
+# EAP + OpenBPM 兼容需要时明确选择
+uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills
 ```
 
-不指定 `--skill` 时安装三套平台 Skill。`link` 模式跟随当前 Git checkout；在依赖仓库固定版本时可用 Git submodule 按已审查的 SHA 锁定更新。`copy` 模式不会自动覆盖旧版本，避免误覆盖开发者自定义文件。
+默认使用 symlink 跟随当前 checkout；Windows 或受限文件系统可以使用 `--method copy`（复制后不会自动覆盖）。基于 Git submodule 的使用方可把已验证的 Git SHA 固定下来。
 
-## Skills 与项目扩展
-
-- [EAP + OpenBPM](skills/eap-obpm/SKILL.md)
-- [EXTN](skills/extn/SKILL.md)
-- [CloudFile](skills/cloudfile/SKILL.md)
-
-Skills 是开发流程指导；实际数据查询由 MCP 适配器执行。项目专有配置应始终留在其独立权限域内，不把业务数据、身份凭据或内部资料复制到公共仓库。
+- [EXTN AI Coding Skill](skills/extn/SKILL.md)
+- [EAP + OpenBPM 兼容 Skill](skills/eap-obpm/SKILL.md)
+- [CloudFile 连接器 Skill](skills/cloudfile/SKILL.md)
 
 ## 开发与测试
 
@@ -82,8 +91,8 @@ Skills 是开发流程指导；实际数据查询由 MCP 适配器执行。项�
 uv run python -m unittest discover -s tests -v
 ```
 
-适配器仅使用已核对的固定 REST 端点；服务端权限最终生效。首版不提供公网 MCP HTTP 服务，也没有支持生产写入的授权协议。
+本仓库测试包括 MCP 握手、固定路由、认证安全、模拟 HTTP、EXTN 表单结构分析、依赖识别、输入限制与安装器。**尚未在真实授权 EXTN DEV 实例上完成端到端验证**，不能宣称 7.5 已具备生产自动交付能力。
 
-## 许可证
+## License
 
-Apache-2.0。CloudFile 的 Seafile 源码及其他上游项目仍遵循原有许可证；本仓库不复制它们的服务端实现。
+Apache-2.0。本仓库实现独立工具；底层 EXTN、EAP/OpenBPM、CloudFile 等继续遵守各自许可和数据使用约定。

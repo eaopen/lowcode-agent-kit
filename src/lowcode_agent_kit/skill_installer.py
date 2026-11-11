@@ -12,8 +12,8 @@ import shutil
 from pathlib import Path
 
 SKILL_DIRS = {
-    "eap-obpm": "lowcode-eap-obpm",
     "extn": "lowcode-extn",
+    "eap-obpm": "lowcode-eap-obpm",
     "cloudfile": "lowcode-cloudfile",
 }
 
@@ -30,7 +30,7 @@ def install(
     if method not in {"link", "copy"}:
         raise ValueError("method must be link or copy")
     if not names:
-        names = list(SKILL_DIRS)
+        names = ["extn"]
     source_root = source_root.resolve()
     destination_root = destination_root.expanduser().resolve()
 
@@ -67,7 +67,7 @@ def install(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Install generic lowcode Skills without overwriting other installations")
     parser.add_argument("--target", type=Path, required=True, help="User-chosen Agent Skills directory")
-    parser.add_argument("--skill", choices=tuple(SKILL_DIRS), action="append", default=[], help="Specific platform Skill (repeatable); defaults to all")
+    parser.add_argument("--skill", choices=tuple(SKILL_DIRS), action="append", default=[], help="Specific platform Skill (repeatable); defaults to EXTN")
     parser.add_argument("--method", choices=("link", "copy"), default="link", help="link tracks source checkout; copy for Windows without symlink permissions")
     parser.add_argument("--dry-run", action="store_true", help="Show actions without writing")
     args = parser.parse_args()

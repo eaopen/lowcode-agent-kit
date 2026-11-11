@@ -74,14 +74,39 @@ class EapObpmAdapter(Adapter):
 class ExtnAdapter(Adapter):
     platform = "extn"
     engine = "EXTN/Flowable"
-    capabilities = ("model.inspect", "form.inspect", "workflow.inspect", "dictionary.inspect")
+    capabilities = (
+        "form.catalog",
+        "form.inspect",
+        "form.context",
+        "model.inspect",
+        "workflow.catalog",
+        "workflow.inspect",
+        "workflow.definition.inspect",
+        "workflow.versions.inspect",
+        "workflow.form.inspect",
+        "dictionary.inspect",
+    )
 
     def resolve(self, capability: str, identifier: str) -> ReadCall:
+        # Catalog operations are read-only, bounded and accept no freeform query.
+        if capability in ("form.catalog", "workflow.catalog"):
+            if identifier:
+                raise ValueError(f"{capability} does not take an identifier")
+            return ReadCall(
+                "GET",
+                "/api/visualdev/Base/list" if capability == "form.catalog" else "/api/workflow/template",
+                {"currentPage": "1", "pageSize": "20"},
+            )
         path_id = quote(valid_key(identifier), safe="")
         calls = {
             "model.inspect": ReadCall("GET", f"/api/visualdev/Base/{path_id}/FormDataFields", {"filterType": "0"}),
             "form.inspect": ReadCall("GET", f"/api/visualdev/Base/{path_id}"),
+            "form.context": ReadCall("GET", f"/api/visualdev/Base/{path_id}"),
             "workflow.inspect": ReadCall("GET", f"/api/workflow/template/{path_id}"),
+            "workflow.definition.inspect": ReadCall("GET", f"/api/workflow/template/Info/{path_id}"),
+            "workflow.versions.inspect": ReadCall("GET", f"/api/workflow/template/Version/{path_id}"),
+            # This ID is a workflow VERSION ID, not a template ID.
+            "workflow.form.inspect": ReadCall("GET", f"/api/workflow/template/{path_id}/FormInfo"),
             "dictionary.inspect": ReadCall("GET", f"/api/system/DictionaryData/{path_id}/Data/Selector"),
         }
         try:

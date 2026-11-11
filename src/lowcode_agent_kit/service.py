@@ -43,6 +43,16 @@ class LowcodeService:
     def inspect(self, capability: str, identifier: str = "") -> dict:
         call = self.adapter.resolve(capability, identifier)
         result = self.transport.request(call.method, call.path, params=call.params, body=call.body)
+        if self.adapter.platform == "extn" and capability == "form.context":
+            from .extn_context import analyze_form_definition
+
+            return {
+                "platform": "extn",
+                "capability": capability,
+                "identifier": identifier,
+                "source": "native REST (summarized)",
+                "context": analyze_form_definition(result),
+            }
         return {
             "platform": self.adapter.platform,
             "capability": capability,
