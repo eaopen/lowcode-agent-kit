@@ -1,6 +1,6 @@
 # EXTN 7.5 — AI-Ready Enterprise Application Foundation（规划）
 
-> 状态：**产品方向与阶段性实施计划**，不是正式发布说明。当前可核对的 EXTN 后端版本仍为 7.0.0-RELEASE。7.5 需要由 EXTN 仓库独立完成升级、验收及发布，本仓库不修改 EXTN 数据库或生产环境。
+> 状态：**Low-Code Agent Kit 的 EXTN 工具实施计划**，不是 EXTN 产品版本规划的真源，也不是正式发布说明。跨仓产品目标与 7.1–7.5 各版本开发计划见 [eaextn/extn-home 产品路线图 PR #3](https://github.com/eaextn/extn-home/pull/3)；本仓只维护 Skills/MCP 交付。当前可核对的后端基线仍为 7.0.0-RELEASE。7.5 由 EXTN 各源仓独立升级、验收及发布；此工具仓不修改 EXTN 数据库或生产环境。
 
 ## 一、产品目标
 

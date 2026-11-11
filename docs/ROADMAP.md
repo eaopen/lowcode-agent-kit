@@ -1,6 +1,6 @@
 # Low-Code Agent Kit 路线图 — EXTN 7.5 优先
 
-> **EXTN 7.5 — AI-Ready Enterprise Application Foundation** 是面向未来的产品规划，而不是当前已经发布的版本。Kit 版本与 EXTN 平台版本独立。
+> **本文件仅管理 Kit 自身的 v0.x 能力/测试/联调**；EXTN 7.1–7.5 的国际化、用户端 UX、Form Design、内部/运行时 AI 等产品任务以 [extn-home 产品版本规划 PR #3](https://github.com/eaextn/extn-home/pull/3) 为准。EXTN 7.5 为拟议目标，不是已发布制品；Kit 与 EXTN 的版本号独立。
 
 ## 优先级排序
 
