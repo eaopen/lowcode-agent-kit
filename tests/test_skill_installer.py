@@ -40,6 +40,14 @@ class InstallerTests(unittest.TestCase):
                 install(ROOT, target, ["eap-obpm"])
             self.assertEqual((existing / "custom.txt").read_text(), "leave alone")
 
+    def test_extn_is_the_default_installation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "skills"
+            installed = install(ROOT, root, [], method="copy")
+            self.assertEqual(installed, [("extn", "copy")])
+            self.assertTrue((root / "lowcode-extn" / "SKILL.md").exists())
+            self.assertFalse((root / "lowcode-eap-obpm").exists())
+
     def test_invalid_skill_does_not_create_directories(self):
         with tempfile.TemporaryDirectory() as temp:
             target = Path(temp) / "skills"

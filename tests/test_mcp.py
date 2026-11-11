@@ -11,6 +11,9 @@ class MCPTests(unittest.IsolatedAsyncioTestCase):
         registered = await server.list_tools()
         names = {x.name for x in registered}
         self.assertEqual(names, {"platform_discover", "platform_inspect", "preview_change"})
+        extn = create_server(LowcodeService(Config(platform="extn")))
+        extn_names = {tool.name for tool in await extn.list_tools()}
+        self.assertEqual(extn_names, names | {"extn_analyze_definition", "extn_preview_definition_change"})
 
 
 if __name__ == "__main__":
