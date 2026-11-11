@@ -2,7 +2,7 @@
 
 **优先服务 EXTN 7.5 — AI-Ready Enterprise Application Foundation**，以真实企业应用的理解、修改、验证和持续交付为目标。EXTN 7.5 目前是**规划中的版本**，不是已发布制品。
 
-[EXTN 7.1–7.5 产品规划（extn-home PR #3）](https://github.com/eaextn/extn-home/pull/3) · [Kit 的 EXTN 工具实施规划](docs/EXTN-7.5.md) · [架构](docs/ARCHITECTURE.md) · [产品对标](docs/BENCHMARKS-2026.md) · [工具路线图](docs/ROADMAP.md) · [安全](docs/SECURITY.md)
+[EXTN 7.1–7.5 产品规划（extn-home 正式文档）](https://github.com/eaextn/extn-home/blob/main/docs/product-roadmap/README.md) · [Kit 的 EXTN 工具实施规划](docs/EXTN-7.5.md) · [架构](docs/ARCHITECTURE.md) · [产品对标](docs/BENCHMARKS-2026.md) · [工具路线图](docs/ROADMAP.md) · [安全](docs/SECURITY.md)
 
 ## 产品方向与适配边界
 

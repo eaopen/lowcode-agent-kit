@@ -1,6 +1,6 @@
 # Low-Code Agent Kit 路线图 — EXTN 7.5 优先
 
-> **本文件仅管理 Kit 自身的 v0.x 能力/测试/联调**；EXTN 7.1–7.5 的国际化、用户端 UX、Form Design、内部/运行时 AI 等产品任务以 [extn-home 产品版本规划 PR #3](https://github.com/eaextn/extn-home/pull/3) 为准。EXTN 7.5 为拟议目标，不是已发布制品；Kit 与 EXTN 的版本号独立。
+> **本文件仅管理 Kit 自身的 v0.x 能力/测试/联调**；EXTN 7.1–7.5 的国际化、用户端 UX、Form Design、内部/运行时 AI 等产品任务以 [extn-home 产品版本规划](https://github.com/eaextn/extn-home/blob/main/docs/product-roadmap/README.md) 为准。EXTN 7.5 为拟议目标，不是已发布制品；Kit 与 EXTN 的版本号独立。
 
 ## 优先级排序
 
