@@ -53,6 +53,21 @@ CloudFile 默认采用 `Authorization: Token ...`，其他两套默认采用 `Be
 
 **注意：离线发现不能证明目标部署版本支持该接口。** 具体 URL、权限、数据模型须在目标实例验证。本仓库当前的测试不包含真实业务登录及审批。
 
+## 通用 Skills 安装
+
+通用安装器可以把本仓库的 Skills 按需链接/复制到**用户指定的 Agent Skills 目录**，不内置任何项目专属逻辑，也不会覆盖已有同名技能。
+
+```bash
+# 请将 --target 换成当前 AI Agent 实际扫描的 Skills 目录
+uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills --dry-run
+uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills
+
+# Windows 没有创建符号链接权限时，使用复制（更新时需显式管理旧副本）
+uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills --method copy
+```
+
+不指定 `--skill` 时安装三套平台 Skill。`link` 模式跟随当前 Git checkout；在依赖仓库固定版本时可用 Git submodule 按已审查的 SHA 锁定更新。`copy` 模式不会自动覆盖旧版本，避免误覆盖开发者自定义文件。
+
 ## Skills 与项目扩展
 
 - [EAP + OpenBPM](skills/eap-obpm/SKILL.md)
