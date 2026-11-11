@@ -46,7 +46,7 @@
 | **P3 — 交付产品化** | 需求/截图/现有模块 → AI 方案 → EXTN 元数据/源码 → 回归测试及交付证据 | 以实际团队总耗时、修改耗时、返工率衡量 |
 | 远期（按需） | 受原业务权限管控的用户端 Agent 与审批协作 | 不通过 Coding MCP 复用生产业务写权限 |
 
-P0 首批新增能力来自已核对的控制器路由：`/api/visualdev/Base/list`、`/api/visualdev/Base/{id}`、`/api/workflow/template[/Info|/Version]/{id}` 等。**源码具备接口不等于目标 DEV 服务已经部署且授权**。
+P0 首批新增能力来自已核对的控制器路由：`/api/visualdev/Base`、`/api/visualdev/Base/{id}`、`/api/workflow/template[/Info|/Version]/{id}` 等。**源码具备接口不等于目标 DEV 服务已经部署且授权**。
 
 ## 五、尽量少改原有 EXTN
 

@@ -199,7 +199,7 @@ class ExtnContextTests(unittest.TestCase):
     def test_manifest_additional_read_routes(self):
         adapter = ExtnAdapter()
         cases = {
-            "form.catalog": ("/api/visualdev/Base/list", {"currentPage": "1", "pageSize": "20"}),
+            "form.catalog": ("/api/visualdev/Base", {"currentPage": "1", "pageSize": "20"}),
             "workflow.catalog": ("/api/workflow/template", {"currentPage": "1", "pageSize": "20"}),
             "workflow.versions.inspect": ("/api/workflow/template/Version/def1", None),
             "workflow.definition.inspect": ("/api/workflow/template/Info/def1", None),

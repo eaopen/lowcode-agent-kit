@@ -40,7 +40,7 @@ Codex / Claude Code / Paseo / other Coding Agents
 
 | 能力 | 原生 API 路由 | 备注 |
 | --- | --- | --- |
-| `form.catalog` | GET `/api/visualdev/Base/list` | 固定第一页最多 20 条 |
+| `form.catalog` | GET `/api/visualdev/Base` | 固定第一页最多 20 条 |
 | `form.inspect` / `form.context` | GET `/api/visualdev/Base/{id}` | 后者只返回摘要，不暴露脚本正文 |
 | `model.inspect` | GET `/api/visualdev/Base/{id}/FormDataFields` | 字段定义，非业务数据行 |
 | `workflow.catalog` | GET `/api/workflow/template` | 固定第一页最多 20 条 |

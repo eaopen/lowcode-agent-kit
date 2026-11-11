@@ -21,6 +21,7 @@
 ## v0.2 — EXTN context-first（当前分支）
 
 - [x] EXTN 专用 `form.catalog`、`workflow.catalog` 及只读版本/设计关联查询（第一页限 20 条）
+- [x] 通用 VisualDev 目录带设计权限，不误用仅筛选流程表单的 /Base/list
 - [x] `form.context`：现有 VisualDev 表单详情 → 有界的字段/字典/表/数据接口/流程关联摘要
 - [x] `extn_analyze_definition`：本地离线分析真实 EXTN 形状的 JSON（不执行 JS，不读写业务数据）
 - [x] EXTN 字段级变更风险预览：字段增删、必填、控件类型及字典依赖，忽略纯布局重排

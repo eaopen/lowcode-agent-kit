@@ -94,7 +94,7 @@ class ExtnAdapter(Adapter):
                 raise ValueError(f"{capability} does not take an identifier")
             return ReadCall(
                 "GET",
-                "/api/visualdev/Base/list" if capability == "form.catalog" else "/api/workflow/template",
+                "/api/visualdev/Base" if capability == "form.catalog" else "/api/workflow/template",
                 {"currentPage": "1", "pageSize": "20"},
             )
         path_id = quote(valid_key(identifier), safe="")
