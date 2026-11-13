@@ -60,6 +60,7 @@ uv run lowcode-mcp
 | `platform_inspect` | `form.catalog`、`form.inspect`、`form.context`、`model.inspect`、`workflow.catalog`、`workflow.inspect`、`workflow.definition.inspect`、`workflow.versions.inspect`、`workflow.form.inspect`、`dictionary.inspect` | 是（无凭据拒绝） |
 | `extn_analyze_definition` | 解析 JSON 字符串的表单控件及依赖摘要，不返回 JS/富文本/业务行 | 否 |
 | `extn_preview_definition_change` | 比较两版表单的字段增删、必填变化、控件与字典依赖，提示影响风险，不写入 | 否 |
+| `extn_preview_field_patch` | 离线校验单个 EXTN 字段的标题/必填修改提案；严格比对字段身份和原值，不写回 | 否 |
 | `preview_change` | 顶层字段离线差异、SHA-256；不修改平台 | 否 |
 
 `form.catalog` 和 `workflow.catalog` 仅访问固定第一页最多 20 条；`form.context` 通过受限原生 API 读取后返回摘要而不是原始表单脚本，面向 Coding Agent 的上下文发现更节省信息量。
@@ -81,6 +82,7 @@ uv run lowcode-install-skills --skill eap-obpm --target /path/to/agent/skills
 
 默认使用 symlink 跟随当前 checkout；Windows 或受限文件系统可以使用 `--method copy`（复制后不会自动覆盖）。基于 Git submodule 的使用方可把已验证的 Git SHA 固定下来。
 
+- [EXTN 单字段 Patch v0 契约与安全限制](docs/EXTN-FIELD-PATCH-V0.md)
 - [EXTN AI Coding Skill](skills/extn/SKILL.md)
 - [EAP + OpenBPM 兼容 Skill](skills/eap-obpm/SKILL.md)
 - [CloudFile 连接器 Skill](skills/cloudfile/SKILL.md)

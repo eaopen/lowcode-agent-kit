@@ -47,6 +47,15 @@ def create_server(service: LowcodeService) -> MCPServer:
 
             return compare_form_definitions(before_definition_json, after_definition_json)
 
+        @server.tool(
+            name="extn_preview_field_patch",
+            description="Validate a strict single-field EXTN patch (label/required only) OFFLINE. Never write, apply or publish.",
+        )
+        def extn_preview_field_patch(form_definition_json: str, patch_json: str) -> dict:
+            from .extn_field_patch import preview_field_patch
+
+            return preview_field_patch(form_definition_json, patch_json)
+
     @server.tool(name="preview_change", description="Preview differences between two JSON objects OFFLINE without applying")
     def preview_change(before_json: str, after_json: str) -> dict:
         before = json.loads(before_json)

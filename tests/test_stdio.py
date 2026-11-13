@@ -74,6 +74,33 @@ class StdioMCPTests(unittest.IsolatedAsyncioTestCase):
                 )
                 self.assertFalse(planned.is_error)
                 self.assertIn("extn-form-change-preview/v1", str(planned.structured_content or planned.content))
+                self.assertIn("extn_preview_field_patch", names)
+                safe_form = {
+                    "id": "demo-form-01",
+                    "formData": json.dumps({
+                        "fields": [{"__vModel__": "name", "__config__": {
+                            "formId": "field1", "label": "旧名称", "required": False,
+                        }}],
+                    }),
+                }
+                patch = {
+                    "format": "extn-field-patch/v0", "formId": "demo-form-01",
+                    "target": {"formItemId": "field1", "model": "name"},
+                    "changes": [{"path": "__config__.label", "expected": "旧名称", "value": "新名称"}],
+                    "mode": "proposal",
+                }
+                preview = await session.call_tool(
+                    "extn_preview_field_patch",
+                    {"form_definition_json": json.dumps(safe_form), "patch_json": json.dumps(patch)},
+                )
+                self.assertFalse(preview.is_error)
+                self.assertIn("extn-field-patch-preview/v0", str(preview.structured_content or preview.content))
+                invalid_patch = {**patch, "mode": "apply"}
+                denied_patch = await session.call_tool(
+                    "extn_preview_field_patch",
+                    {"form_definition_json": json.dumps(safe_form), "patch_json": json.dumps(invalid_patch)},
+                )
+                self.assertTrue(denied_patch.is_error)
                 # A tool cannot connect to the platform merely because the
                 # offline analyzer was used without credentials.
                 denied = await session.call_tool(
