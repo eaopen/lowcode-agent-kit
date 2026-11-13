@@ -25,6 +25,7 @@
 - [x] `form.context`：现有 VisualDev 表单详情 → 有界的字段/字典/表/数据接口/流程关联摘要
 - [x] `extn_analyze_definition`：本地离线分析真实 EXTN 形状的 JSON（不执行 JS，不读写业务数据）
 - [x] EXTN 字段级变更风险预览：字段增删、必填、控件类型及字典依赖，忽略纯布局重排
+- [x] 严格限定单字段 label/required 的离线 Patch v0 合同（不执行、不写回），供 FormGenerator 交互 POC 使用
 - [x] `lowcode-install-skills` 默认安装 EXTN（手动选择其他兼容 Skill）
 - [x] EXTN 7.5 产品设计与最新产品对标文档
 - [ ] 具备授权的 EXTN DEV 实例上逐项确认路由、身份、字段与返回封装
